@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista de Centros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- CSS GLOBAL -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        /* Estilo específico para Centros (Azul Primario) */
+        table.dataTable thead th {
+            background-color: #0d6efd;
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('centros')}"></div>
+
+<!-- CONTENEDOR 90% -->
+<div class="container-fluid container-90">
+
+    <div class="d-flex justify-content-between align-items-center page-header">
+        <div>
+            <h2 class="text-primary fw-bold mb-0">Gestión de Centros</h2>
+            <p class="text-muted mb-0 fw-bold">Administración</p>
+        </div>
+        <a href="/centros/nuevo" class="btn btn-primary shadow-sm">
+            <i class="bi bi-building-add"></i> Nuevo Centro
+        </a>
+    </div>
+
+    <!-- TARJETA PANTALLA COMPLETA -->
+    <div class="card table-card">
+        <div class="card-body">
+            <table class="table table-striped table-hover w-100 h-100 align-middle">
+                <thead class="sticky-top">
+                <tr>
+                    <th>ID</th>
+                    <th>Denominación</th>
+                    <th>Dirección</th>
+                    <th>Provincia</th>
+                    <th>Teléfono</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="centro : ${listaCentros}">
+                    <td th:text="${centro.id}" class="fw-bold">1</td>
+                    <td th:text="${centro.denominacion}">Nombre</td>
+                    <td th:text="${centro.direccion}">Dirección</td>
+                    <td th:text="${centro.provincia}">Provincia</td>
+                    <td th:text="${centro.telefono}">Tlf</td>
+
+                    <td class="text-center">
+                        <a th:href="@{/centros/editar/{id}(id=${centro.id})}"
+                           class="btn btn-warning btn-sm me-2 text-dark btn-xs">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+
+                        <a th:href="@{/centros/eliminar/{id}(id=${centro.id})}"
+                           class="btn btn-danger btn-sm btn-xs"
+                           onclick="return confirm('¿Seguro que deseas eliminar este centro?');">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+
+            <div th:if="${#lists.isEmpty(listaCentros)}" class="text-center p-5 text-muted">
+                <h4><i class="bi bi-building-exclamation"></i></h4>
+                <p>No hay centros registrados todavía.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

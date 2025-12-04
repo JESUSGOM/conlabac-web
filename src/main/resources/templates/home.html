@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Inicio - Aliros</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; overflow-x: hidden; background-color: #f8f9fa; }
+        .card-dash { transition: transform 0.2s; border: none; cursor: pointer; }
+        .card-dash:hover { transform: translateY(-5px); }
+        .icon-large { font-size: 2.5rem; opacity: 0.8; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('home')}"></div>
+
+<div class="container mt-5">
+
+    <div class="mb-5 text-center">
+        <h2 class="fw-light">Bienvenido a <span class="fw-bold text-primary">Aliros</span></h2>
+        <p class="text-muted fw-bold" th:text="${nombreCentro}">Centro</p>
+    </div>
+
+    <div class="row g-4">
+
+        <div class="col-md-6 col-lg-3">
+            <a href="/relevos" class="text-decoration-none">
+                <div class="card card-dash shadow-sm h-100 border-start border-4 border-danger">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted small fw-bold">Relevos</h6>
+                            <h2 class="mb-0 text-danger" th:text="${stats.relevosPendientes}">0</h2>
+                            <small class="text-muted">Notas sin leer</small>
+                        </div>
+                        <i class="bi bi-bell-fill icon-large text-danger"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="/paqueteria" class="text-decoration-none">
+                <div class="card card-dash shadow-sm h-100 border-start border-4 border-warning">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted small fw-bold">Paquetería</h6>
+                            <h2 class="mb-0 text-warning" th:text="${stats.paquetesPendientes}">0</h2>
+                            <small class="text-muted">Pendientes recogida</small>
+                        </div>
+                        <i class="bi bi-box-seam-fill icon-large text-warning"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="/keymoves" class="text-decoration-none">
+                <div class="card card-dash shadow-sm h-100 border-start border-4 border-primary">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted small fw-bold">Llaves</h6>
+                            <h2 class="mb-0 text-primary" th:text="${stats.llavesPrestadas}">0</h2>
+                            <small class="text-muted">Prestadas (Fuera)</small>
+                        </div>
+                        <i class="bi bi-key-fill icon-large text-primary"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <a href="/movimientos" class="text-decoration-none">
+                <div class="card card-dash shadow-sm h-100 border-start border-4 border-success">
+                    <div class="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-uppercase text-muted small fw-bold">Ocupación</h6>
+                            <h2 class="mb-0 text-success" th:text="${stats.visitasDentro + stats.contratasDentro}">0</h2>
+                            <small class="text-muted">Personas dentro</small>
+                        </div>
+                        <i class="bi bi-people-fill icon-large text-success"></i>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div> <div class="row mt-5 justify-content-center">
+    <div class="col-auto">
+        <a href="/incidencias/nueva" class="btn btn-outline-danger px-4">
+            <i class="bi bi-exclamation-triangle"></i> Reportar Incidencia
+        </a>
+    </div>
+    <div class="col-auto">
+        <a href="/telefonos/nuevo" class="btn btn-outline-dark px-4">
+            <i class="bi bi-telephone-plus"></i> Aviso Telefónico
+        </a>
+    </div>
+</div>
+
+</div>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

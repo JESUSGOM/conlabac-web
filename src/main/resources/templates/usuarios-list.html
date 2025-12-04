@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Administración de Usuarios</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        table.dataTable thead th {
+            background-color: #0d6efd;
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('usuarios')}"></div>
+
+<div class="container-fluid container-90">
+
+    <div class="d-flex justify-content-between align-items-center page-header">
+        <div>
+            <h2 class="text-primary fw-bold mb-0">Gestión de Usuarios</h2>
+            <p class="text-muted mb-0 fw-bold">Administración del Sistema</p>
+        </div>
+        <a href="/admin/usuarios/nuevo" class="btn btn-primary shadow-sm">
+            <i class="bi bi-person-plus-fill"></i> Nuevo Usuario
+        </a>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body">
+            <table id="tablaUsuarios" class="table table-striped table-hover w-100 h-100">
+                <thead>
+                <tr>
+                    <th>DNI / Login</th>
+                    <th>Nombre</th>
+                    <th>Apellidos</th>
+                    <th>Centro ID</th>
+                    <th>Rol</th>
+                    <th class="text-center">Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="u : ${listaUsuarios}">
+                    <td th:text="${u.dni}" class="fw-bold">12345678Z</td>
+                    <td th:text="${u.nombre}">Nombre</td>
+                    <td th:text="${u.apellido1} + ' ' + (${u.apellido2} ?: '')">Apellidos</td>
+                    <td th:text="${u.idCentro}">1</td>
+                    <td>
+                        <span th:if="${u.tipo == 'Z'}" class="badge bg-danger">ADMIN</span>
+                        <span th:if="${u.tipo != 'Z'}" class="badge bg-secondary">Vigilante</span>
+                    </td>
+                    <td class="text-center">
+                        <a th:href="@{/admin/usuarios/editar/{dni}(dni=${u.dni})}" class="btn btn-warning btn-sm me-1 btn-xs">
+                            <i class="bi bi-pencil-fill"></i>
+                        </a>
+                        <a th:href="@{/admin/usuarios/eliminar/{dni}(dni=${u.dni})}"
+                           class="btn btn-danger btn-sm btn-xs"
+                           onclick="return confirm('¿Borrar usuario definitivamente?');">
+                            <i class="bi bi-trash-fill"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script th:inline="none">
+    $(document).ready(function() {
+        $('#tablaUsuarios').DataTable({
+            responsive: true,
+            pageLength: 10,
+            scrollY: '60vh',
+            scrollCollapse: true,
+            language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json' }
+        });
+    });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

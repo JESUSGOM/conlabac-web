@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Libro de Incidencias</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        /* Ajuste específico para esta tabla (Cabecera Roja de Incidencias) */
+        table.dataTable thead th {
+            background-color: #dc3545; /* Rojo Bootstrap */
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('incidencias')}"></div>
+
+<div class="container-fluid container-90">
+
+    <div class="d-flex justify-content-between align-items-center page-header">
+        <div>
+            <h2 class="text-danger fw-bold mb-0">Incidencias</h2>
+            <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
+        </div>
+        <a href="/incidencias/nueva" class="btn btn-danger shadow-sm">
+            <i class="bi bi-exclamation-triangle-fill"></i> Nueva Incidencia
+        </a>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body">
+            <table id="tablaIncidencias" class="table table-striped table-hover w-100 h-100">
+                <thead class="sticky-top">
+                <tr>
+                    <th>Fecha / Hora</th>
+                    <th>Reportado Por</th>
+                    <th>Descripción</th>
+                    <th>Comunicado A</th>
+                    <th class="text-center">Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="inc : ${listaIncidencias}">
+
+                    <td th:data-order="${inc.fechaHora}"
+                        th:text="${#temporals.format(inc.fechaHora, 'dd/MM/yyyy HH:mm')}"
+                        class="fw-bold text-nowrap">
+                    </td>
+
+                    <td th:text="${inc.usuario}">Vigilante</td>
+
+                    <td th:text="${#strings.abbreviate(inc.texto, 60)}" th:title="${inc.texto}">Texto...</td>
+
+                    <td>
+                        <span th:if="${inc.comunicadoA != null and inc.comunicadoA != ''}">
+                            <i class="bi bi-megaphone-fill text-danger"></i>
+                            <span th:text="${inc.comunicadoA}">Jefe</span>
+                        </span>
+                        <span th:if="${inc.comunicadoA == null or inc.comunicadoA == ''}" class="text-muted">-</span>
+                    </td>
+
+                    <td class="text-center">
+                        <a th:href="@{/incidencias/detalle/{id}(id=${inc.id})}"
+                           class="btn btn-sm btn-outline-dark btn-xs">
+                            <i class="bi bi-eye"></i> Ver
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script th:inline="none">
+    $(document).ready(function() {
+        $('#tablaIncidencias').DataTable({
+            responsive: true,
+            pageLength: 10,
+            scrollY: '60vh',        // Altura del scroll vertical
+            scrollCollapse: true,
+            order: [[ 0, "desc" ]], // Orden descendente por fecha
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            }
+        });
+    });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

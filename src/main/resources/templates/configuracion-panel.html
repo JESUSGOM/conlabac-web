@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Configuración</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f8f9fa; }
+        body { display: flex; flex-direction: column; }
+        .container.flex-grow-1 { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-height: 0; padding-bottom: 20px; }
+        .card { border: none; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('configuracion')}"></div>
+
+<div class="container mt-4 mb-5 flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-secondary fw-bold mb-0"><i class="bi bi-sliders"></i> Configuración del Centro</h2>
+            <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
+        </div>
+    </div>
+
+    <ul class="nav nav-tabs mb-3" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active fw-bold text-dark" id="alquileres-tab" data-bs-toggle="tab" data-bs-target="#alquileres" type="button" role="tab">Empresas Inquilinas</button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link fw-bold text-dark" id="plantas-tab" data-bs-toggle="tab" data-bs-target="#plantas" type="button" role="tab">Plantas / Ubicaciones</button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="myTabContent">
+
+        <div class="tab-pane fade show active" id="alquileres" role="tabpanel">
+            <div class="card shadow">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Listado de Empresas</h5>
+                    <a href="/admin/configuracion/alquileres/nuevo" class="btn btn-sm btn-dark">+ Añadir Empresa</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-dark">
+                        <tr><th>Nombre de la Empresa (Destino)</th><th class="text-center">Acción</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="a : ${listaAlquileres}">
+                            <td th:text="${a.empresa}">Empresa A</td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/configuracion/alquileres/eliminar/{id}(id=${a.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Borrar?');"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="tab-pane fade" id="plantas" role="tabpanel">
+            <div class="card shadow">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Listado de Plantas</h5>
+                    <a href="/admin/configuracion/plantas/nueva" class="btn btn-sm btn-dark">+ Añadir Planta</a>
+                </div>
+                <div class="card-body p-0">
+                    <table class="table table-striped table-hover mb-0">
+                        <thead class="table-secondary">
+                        <tr><th>Nombre Planta</th><th class="text-center">Acción</th></tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="p : ${listaPlantas}">
+                            <td th:text="${p.nombrePlanta}">Baja</td>
+                            <td class="text-center">
+                                <a th:href="@{/admin/configuracion/plantas/eliminar/{id}(id=${p.id})}" class="btn btn-danger btn-sm" onclick="return confirm('¿Borrar?');"><i class="bi bi-trash"></i></a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

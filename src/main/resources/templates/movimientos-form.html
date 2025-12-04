@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registro Movimiento</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        /* PLANTILLA MAESTRA DE FORMULARIO AL 60% */
+        .form-container-60 {
+            width: 60% !important;
+            max-width: 60% !important;
+            min-width: 500px;
+            margin: 0 auto;
+            flex: 1;
+            overflow-y: auto; /* Scroll interno */
+            padding: 30px 0;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+
+        .card-form {
+            width: 100%;
+            border: none;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('movimientos')}"></div>
+
+<div class="container-fluid form-container-60">
+
+    <div class="card shadow-lg card-form border-top border-4" style="border-top-color: #212529 !important;">
+
+        <div class="card-header bg-white py-3 border-bottom-0">
+            <h4 class="mb-0 fw-bold" style="color: #212529;">
+                <i class="bi bi-person-badge me-2"></i>
+                <span th:text="${movimiento.id == null ? 'REGISTRAR NUEVA ENTRADA' : 'EDITAR MOVIMIENTO'}">
+                    Datos del Movimiento
+                </span>
+            </h4>
+        </div>
+
+        <div class="card-body p-4 pt-2">
+            <form th:action="@{/movimientos/guardar}" th:object="${movimiento}" method="post">
+                <input type="hidden" th:field="*{id}" />
+                <input type="hidden" th:field="*{idCentro}" id="hiddenCentroId" />
+
+                <h6 class="text-muted border-bottom pb-2 mb-3 fw-bold small">DATOS DEL VISITANTE</h6>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">NOMBRE</label>
+                        <input type="text" th:field="*{nombre}" class="form-control bg-light" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">1º APELLIDO</label>
+                        <input type="text" th:field="*{apellido1}" class="form-control bg-light" required/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">2º APELLIDO</label>
+                        <input type="text" th:field="*{apellido2}" class="form-control bg-light"/>
+                    </div>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold text-secondary small">PROCEDENCIA (EMPRESA/PARTICULAR)</label>
+                        <input type="text" th:field="*{procedencia}" class="form-control bg-light" placeholder="Empresa externa, Cliente..."/>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">¿VEHÍCULO?</label>
+                        <select th:field="*{vehiculo}" class="form-select bg-light">
+                            <option value="NO" selected>NO</option>
+                            <option value="SI">SI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="text-muted border-bottom pb-2 mb-3 fw-bold small mt-4">DETALLES DE LA VISITA</h6>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold text-secondary small">DESTINO / A QUIÉN VISITA</label>
+                        <select th:field="*{destino}" id="comboDestino" class="form-select bg-light">
+                            <option value="" selected>-- Cargando destinos... --</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-secondary small">PLANTA</label>
+                        <select th:field="*{planta}" id="comboPlanta" class="form-select bg-light">
+                            <option value="" selected>-- Cargando plantas... --</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small">MOTIVO</label>
+                    <input type="text" th:field="*{motivo}" class="form-control bg-light"/>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-secondary small">FECHA Y HORA ENTRADA</label>
+                    <input type="datetime-local" th:field="*{fechaEntrada}" class="form-control bg-light" required/>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                    <a href="/movimientos" class="btn btn-outline-secondary px-4">
+                        Cancelar
+                    </a>
+                    <button type="submit" class="btn text-white px-5 fw-bold shadow-sm" style="background-color: #212529;">
+                        <i class="bi bi-save me-1"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const centroId = document.getElementById('hiddenCentroId').value;
+        const destinoSelect = document.getElementById('comboDestino');
+        const plantaSelect = document.getElementById('comboPlanta');
+
+        if (centroId) {
+            // 1. Cargar Destinos
+            fetch(`/ajax/destinos?centroId=${centroId}`)
+                .then(response => response.json())
+                .then(data => {
+                    destinoSelect.innerHTML = '<option value="">-- Seleccione Destino --</option>';
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        const texto = item.empresa || item.nombre || "Sin Nombre";
+                        option.value = texto;
+                        option.text = texto;
+                        // Preselección si estamos editando
+                        // (Opcional: Si el backend envía el valor seleccionado, Thymeleaf lo marca,
+                        // pero al recargar el select por JS, hay que tener cuidado.
+                        // Normalmente Thymeleaf th:field maneja el valor, pero al vaciar el select aquí se pierde.
+                        // Para edición avanzada habría que leer el valor actual antes de borrar opciones).
+                        destinoSelect.appendChild(option);
+                    });
+                });
+
+            // 2. Cargar Plantas
+            fetch(`/ajax/plantas?centroId=${centroId}`)
+                .then(response => response.json())
+                .then(data => {
+                    plantaSelect.innerHTML = '<option value="">-- Seleccione Planta --</option>';
+                    data.forEach(item => {
+                        const option = document.createElement('option');
+                        const textoPlanta = item.nombrePlanta || item.planta || item.nombre;
+                        option.value = textoPlanta;
+                        option.text = textoPlanta;
+                        plantaSelect.appendChild(option);
+                    });
+                });
+        }
+    });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Nueva Nota de Relevo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <!-- CSS GLOBAL -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('relevos')}"></div>
+
+<div class="container-fluid form-container-60">
+
+    <div class="card shadow-lg card-form border-top border-4" style="border-top-color: #0d6efd !important;">
+        <div class="card-header bg-white py-3 border-bottom-0">
+            <h4 class="mb-0 fw-bold" style="color: #0d6efd;">
+                <i class="bi bi-pencil-square me-2"></i>NUEVA NOTA PARA SIGUIENTE TURNO
+            </h4>
+        </div>
+
+        <div class="card-body p-4 pt-2">
+            <form th:action="@{/relevos/guardar}" th:object="${relevo}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-secondary small">ESCRITO POR</label>
+                    <input type="text" th:field="*{operarioEscritor}" class="form-control form-control-lg bg-light" readonly />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-secondary small">MENSAJE / NOVEDAD</label>
+                    <textarea th:field="*{texto}" class="form-control bg-light" rows="6" required
+                              placeholder="Escribe aquí las instrucciones..."></textarea>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 border-top pt-4">
+                    <a href="/relevos" class="btn btn-outline-secondary px-4">Cancelar</a>
+                    <button type="submit" class="btn text-white px-5 fw-bold shadow-sm" style="background-color: #0d6efd;">
+                        <i class="bi bi-save me-1"></i> Publicar Nota
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

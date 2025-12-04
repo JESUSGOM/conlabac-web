@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Aperturas Extra</title>
+    <!-- CSS Bootstrap y Plugins -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <!-- CSS GLOBAL -->
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        /* Ajuste específico: Cabecera Púrpura */
+        table.dataTable thead th {
+            background-color: #6f42c1;
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<!-- MENÚ -->
+<div th:replace="~{fragments :: menu('aperturas')}"></div>
+
+<!-- CONTENEDOR 90% (Listado) -->
+<div class="container-fluid container-90">
+
+    <div class="d-flex justify-content-between align-items-center page-header">
+        <div>
+            <h2 class="fw-bold mb-0" style="color: #6f42c1;">Aperturas Extraordinarias</h2>
+            <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
+        </div>
+        <a href="/aperturas/nueva" class="btn text-white shadow-sm fw-bold" style="background-color: #6f42c1;">
+            <i class="bi bi-calendar-plus"></i> Registrar Apertura
+        </a>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body">
+            <table id="tablaAperturas" class="table table-striped table-hover w-100 h-100">
+                <thead class="sticky-top">
+                <tr>
+                    <th>Fecha</th>
+                    <th>Inicio</th>
+                    <th>Fin</th>
+                    <th>Motivo</th>
+                    <th class="text-center">Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="ae : ${listaAperturas}">
+                    <td th:data-order="${ae.fecha}"
+                        th:text="${#temporals.format(ae.fecha, 'dd-MM-yyyy')}"
+                        class="fw-bold">Fecha</td>
+
+                    <td th:text="${ae.horaInicio}">08:00</td>
+                    <td th:text="${ae.horaFinal}">14:00</td>
+                    <td th:text="${ae.motivo}">Obras</td>
+
+                    <td class="text-center">
+                        <a th:href="@{/aperturas/eliminar/{id}(id=${ae.id})}"
+                           class="btn btn-danger btn-sm btn-xs"
+                           onclick="return confirm('¿Eliminar este registro de apertura?');">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPTS -->
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script th:inline="none">
+    $(document).ready(function() {
+        $('#tablaAperturas').DataTable({
+            responsive: true,
+            pageLength: 10,
+            scrollY: '60vh',
+            scrollCollapse: true,
+            order: [[ 0, "desc" ]],
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+            }
+        });
+    });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

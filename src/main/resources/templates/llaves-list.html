@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Inventario de Llaves</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <style>
+        html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; background-color: #f8f9fa; }
+        body { display: flex; flex-direction: column; }
+        .container.flex-grow-1 { flex: 1; display: flex; flex-direction: column; overflow-y: auto; min-height: 0; padding-bottom: 20px; }
+        .card { border: none; border-radius: 10px; overflow: hidden; flex-shrink: 0; }
+        table.dataTable thead th { background-color: #212529; color: white; vertical-align: middle; }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('llaves')}"></div>
+
+<div class="container mt-4 mb-5 flex-grow-1">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-primary fw-bold mb-0">Inventario de Llaves</h2>
+            <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
+        </div>
+    </div>
+
+    <div class="card shadow">
+        <div class="card-body p-4">
+            <table id="tablaLlaves" class="table table-striped table-hover dt-responsive nowrap" style="width:100%">
+                <thead class="table-dark">
+                <tr><th>Código</th><th>Puerta / Uso</th><th>Planta</th><th>Cajetín</th><th>Restricción</th></tr>
+                </thead>
+                <tbody>
+                <tr th:each="llave : ${listaLlaves}">
+                    <td th:text="${llave.codigo}" class="fw-bold text-primary">K-01</td>
+                    <td th:text="${llave.puerta}">Entrada</td>
+                    <td th:text="${llave.planta}">Baja</td>
+                    <td th:text="${llave.cajetin}">1</td>
+                    <td>
+                        <span th:if="${llave.restriccion != null and llave.restriccion != ''}" class="badge bg-danger" th:text="${llave.restriccion}">Solo Personal</span>
+                        <span th:if="${llave.restriccion == null or llave.restriccion == ''}" class="badge bg-success">Sin restricción</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('#tablaLlaves').DataTable({
+            responsive: true, pageLength: 10,
+            language: { "sProcessing": "Procesando...", "sLengthMenu": "Mostrar _MENU_ registros", "sZeroRecords": "No se encontraron resultados", "sEmptyTable": "Ningún dato disponible", "sInfo": "Mostrando _START_ al _END_ de _TOTAL_ registros", "sInfoEmpty": "Mostrando 0 al 0 de 0 registros", "sInfoFiltered": "(filtrado de _MAX_ registros)", "sSearch": "Buscar:", "oPaginate": { "sFirst": "Primero", "sLast": "Último", "sNext": "Siguiente", "sPrevious": "Anterior" } }
+        });
+    });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

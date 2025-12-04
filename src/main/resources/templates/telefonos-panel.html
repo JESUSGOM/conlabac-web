@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Registro de Llamadas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+
+    <style>
+        table.dataTable thead th {
+            background-color: #6610f2; /* Indigo */
+            color: white;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('telefonos')}"></div>
+
+<div class="container-fluid container-90">
+
+    <div class="d-flex justify-content-between align-items-center page-header">
+        <div>
+            <h2 class="fw-bold mb-0" style="color: #6610f2;">Llamadas Telefónicas</h2>
+            <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
+        </div>
+        <a href="/telefonos/nuevo" class="btn text-white shadow-sm" style="background-color: #6610f2;">
+            <i class="bi bi-telephone-plus-fill"></i> Nueva Llamada
+        </a>
+    </div>
+
+    <div class="card table-card">
+        <div class="card-body">
+            <table id="tablaTelefonos" class="table table-striped table-hover w-100 h-100">
+                <thead class="sticky-top">
+                <tr>
+                    <th>Fecha / Hora</th>
+                    <th>De (Quién llama)</th>
+                    <th>Para (Destinatario)</th>
+                    <th>Mensaje</th>
+                    <th>Estado</th>
+                    <th class="text-center">Acción</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="tel : ${listaLlamadas}">
+                    <td th:data-order="${tel.fechaHoraRegistro}"
+                        th:text="${#temporals.format(tel.fechaHoraRegistro, 'dd/MM/yyyy HH:mm')}"
+                        class="fw-bold text-nowrap">Fecha</td>
+                    <td th:text="${tel.emisor}">De</td>
+                    <td th:text="${tel.destinatario}">Para</td>
+                    <td th:text="${#strings.abbreviate(tel.mensaje, 40)}" th:title="${tel.mensaje}">Mensaje...</td>
+                    <td>
+                        <span th:if="${tel.comunicado == 1}" class="badge bg-success">Comunicado</span>
+                        <span th:if="${tel.comunicado == 0}" class="badge bg-danger">Pendiente</span>
+                    </td>
+                    <td class="text-center align-middle">
+                        <a th:if="${tel.comunicado == 0}"
+                           th:href="@{/telefonos/comunicar/{id}(id=${tel.id})}"
+                           class="btn btn-outline-success btn-sm btn-xs"
+                           onclick="return confirm('¿Confirmar que has pasado el recado?');">
+                            <i class="bi bi-check-lg"></i> Hecho
+                        </a>
+                        <span th:if="${tel.comunicado == 1}" class="text-success fs-5">
+                            <i class="bi bi-check2-all"></i>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script th:inline="none">
+    $(document).ready(function() {
+        $('#tablaTelefonos').DataTable({
+            responsive: true,
+            pageLength: 10,
+            scrollY: '60vh',
+            scrollCollapse: true,
+            order: [[ 0, "desc" ]],
+            columnDefs: [{ responsivePriority: 1, targets: -1 }, { responsivePriority: 2, targets: 0 }],
+            language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
+        });
+    });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

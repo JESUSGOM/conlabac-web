@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Informes Mensuales</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments :: menu('informes')}"></div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-dark">Generación de Informes</h2>
+                <p class="text-muted" th:text="${nombreCentro}">Centro</p>
+            </div>
+
+            <div class="card shadow-lg border-0">
+                <div class="card-header bg-danger text-white py-3 text-center">
+                    <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-pdf-fill"></i> Informe Mensual de Servicio</h5>
+                </div>
+                <div class="card-body p-5">
+
+                    <form action="/admin/informes/descargar" method="post">
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Seleccione el Año</label>
+                            <select name="anio" class="form-select form-select-lg">
+                                <option th:each="a : ${anios}"
+                                        th:value="${a}"
+                                        th:text="${a}"
+                                        th:selected="${a == anioSeleccionado}"></option>
+                            </select>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-secondary">Seleccione el Mes</label>
+                            <select name="mes" class="form-select form-select-lg">
+                                <option th:each="entry : ${meses}"
+                                        th:value="${entry.key}"
+                                        th:text="${entry.value}"
+                                        th:selected="${entry.key == mesSeleccionado}"></option>
+                            </select>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-danger btn-lg fw-bold">
+                                <i class="bi bi-download"></i> Descargar PDF
+                            </button>
+                        </div>
+
+                        <div class="text-center mt-3">
+                            <small class="text-muted">Se generará un archivo con el resumen completo de actividad.</small>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>

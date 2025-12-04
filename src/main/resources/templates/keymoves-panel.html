@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Control de Llaves</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+  <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
+
+  <link th:href="@{/css/style.css}" rel="stylesheet">
+
+  <style>
+    /* Ajuste específico para esta tabla (Cabecera oscura) */
+    table.dataTable thead th {
+      background-color: #212529;
+      color: white;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<body>
+
+<div th:replace="~{fragments :: menu('keymoves')}"></div>
+
+<div class="container-fluid container-90">
+
+  <div class="d-flex justify-content-between align-items-center page-header">
+    <div>
+      <h2 class="text-primary fw-bold mb-0">Control de Llaves</h2>
+      <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="/llaves" class="btn btn-outline-secondary shadow-sm">
+        <i class="bi bi-list-ul"></i> Inventario
+      </a>
+      <a href="/keymoves/entregar" class="btn btn-primary shadow-sm">
+        <i class="bi bi-key-fill"></i> Entregar Llave
+      </a>
+    </div>
+  </div>
+
+  <div class="card table-card">
+    <div class="card-header bg-white py-2 border-bottom">
+      <h6 class="mb-0 text-warning fw-bold">
+        <i class="bi bi-exclamation-circle-fill"></i> Llaves Prestadas (Pendientes de Devolución)
+      </h6>
+    </div>
+
+    <div class="card-body">
+      <table id="tablaPrestamos" class="table table-striped table-hover w-100 h-100">
+        <thead class="table-dark sticky-top">
+        <tr>
+          <th>Llave</th>
+          <th>Nombre</th>
+          <th>Apellidos</th>
+          <th>Fecha Entrega</th>
+          <th class="text-center">Acción</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="prestamo : ${listaPrestamos}">
+          <td>
+            <span class="badge bg-dark fs-6" th:text="${prestamo.codigoLlave}">K-01</span>
+          </td>
+
+          <td th:text="${prestamo.nombre}">Juan</td>
+          <td th:text="${prestamo.apellido1} + ' ' + (${prestamo.apellido2} ?: '')">Pérez</td>
+
+          <td class="text-nowrap" th:text="${prestamo.fechaEntrega} + ' - ' + ${prestamo.horaEntrega}">
+            Fecha
+          </td>
+
+          <td class="text-center">
+            <a th:href="@{/keymoves/devolver/{id}(id=${prestamo.id})}"
+               class="btn btn-success btn-sm btn-xs"
+               onclick="return confirm('¿Confirmar la devolución de esta llave?');">
+              <i class="bi bi-box-arrow-in-left"></i> Devolver
+            </a>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
+<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+
+<script th:inline="none">
+  $(document).ready(function() {
+    $('#tablaPrestamos').DataTable({
+      responsive: true,
+      pageLength: 10,
+      scrollY: '55vh',        // Altura del scroll vertical
+      scrollCollapse: true,
+      lengthChange: false,    // Ocultar selector de cantidad por página para limpiar interfaz
+      language: {
+        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+      }
+    });
+  });
+</script>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+
+</body>
+</html>
