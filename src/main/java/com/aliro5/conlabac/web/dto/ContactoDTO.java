@@ -10,7 +10,6 @@ public class ContactoDTO {
 
     public ContactoDTO() {}
 
-    // --- GETTERS Y SETTERS ---
     public Integer getId() { return id; }
     public void setId(Integer id) { this.id = id; }
     public Integer getIdCentro() { return idCentro; }

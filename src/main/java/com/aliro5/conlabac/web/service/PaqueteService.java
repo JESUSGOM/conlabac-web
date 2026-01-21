@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,39 +13,53 @@ import java.util.List;
 public class PaqueteService {
 
     @Value("${api.url.base}")
-    private String baseUrl;
+    private String apiUrlBase; // http://localhost:8080/api
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private String getApiUrl() {
-        return baseUrl.replace("/centros", "/paqueteria");
+    /**
+     * Construye la URL base: http://localhost:8080/api/paqueteria
+     */
+    private String getFullUrl() {
+        return apiUrlBase + "/paqueteria";
     }
 
     public List<PaqueteDTO> listarPendientes(Integer idCentro) {
-        String url = getApiUrl() + "/pendientes?centroId=" + idCentro;
+        String url = getFullUrl() + "/pendientes?centroId=" + idCentro;
         try {
             PaqueteDTO[] res = restTemplate.getForObject(url, PaqueteDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return (res != null) ? Arrays.asList(res) : new ArrayList<>();
         } catch (Exception e) {
-            e.printStackTrace(); return Arrays.asList();
+            System.err.println("PAQUETERIA: Error cargando pendientes desde " + url + " -> " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
     public List<PaqueteDTO> listarHistorial(Integer idCentro) {
-        String url = getApiUrl() + "/historial?centroId=" + idCentro;
+        String url = getFullUrl() + "/historial?centroId=" + idCentro;
         try {
             PaqueteDTO[] res = restTemplate.getForObject(url, PaqueteDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return (res != null) ? Arrays.asList(res) : new ArrayList<>();
         } catch (Exception e) {
-            e.printStackTrace(); return Arrays.asList();
+            System.err.println("PAQUETERIA: Error cargando historial desde " + url + " -> " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
     public void recibir(PaqueteDTO dto) {
-        restTemplate.postForObject(getApiUrl(), dto, PaqueteDTO.class);
+        try {
+            restTemplate.postForObject(getFullUrl(), dto, PaqueteDTO.class);
+        } catch (Exception e) {
+            System.err.println("PAQUETERIA: Error al recibir paquete -> " + e.getMessage());
+        }
     }
 
     public void entregar(Integer id) {
-        String url = getApiUrl() + "/" + id + "/entregar";
-        restTemplate.put(url, null);
+        String url = getFullUrl() + "/" + id + "/entregar";
+        try {
+            restTemplate.put(url, null);
+        } catch (Exception e) {
+            System.err.println("PAQUETERIA: Error al entregar paquete -> " + e.getMessage());
+        }
     }
 }

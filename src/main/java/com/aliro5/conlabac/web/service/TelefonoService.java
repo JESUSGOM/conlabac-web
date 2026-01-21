@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,30 +13,40 @@ import java.util.List;
 public class TelefonoService {
 
     @Value("${api.url.base}")
-    private String baseUrl;
+    private String apiUrlBase; // http://localhost:8080/api
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private String getApiUrl() {
-        return baseUrl.replace("/centros", "/telefonos");
+    private String getFullUrl() {
+        return apiUrlBase + "/telefonos";
     }
 
     public List<TelefonoDTO> listarHistorial(Integer idCentro) {
-        // Obtenemos TODO (Pendientes + Histórico) ordenado por fecha
-        String url = getApiUrl() + "/historial?centroId=" + idCentro;
+        // URL final: http://localhost:8080/api/telefonos/historial?centroId=X
+        String url = getFullUrl() + "/historial?centroId=" + idCentro;
         try {
             TelefonoDTO[] res = restTemplate.getForObject(url, TelefonoDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return res != null ? Arrays.asList(res) : new ArrayList<>();
         } catch (Exception e) {
-            e.printStackTrace(); return Arrays.asList();
+            System.err.println("Error al cargar historial de telefonos: " + e.getMessage());
+            return new ArrayList<>();
         }
     }
 
     public void registrar(TelefonoDTO dto) {
-        restTemplate.postForObject(getApiUrl(), dto, TelefonoDTO.class);
+        try {
+            restTemplate.postForObject(getFullUrl(), dto, TelefonoDTO.class);
+        } catch (Exception e) {
+            System.err.println("Error al registrar telefono: " + e.getMessage());
+        }
     }
 
     public void marcarComunicado(Integer id) {
-        String url = getApiUrl() + "/" + id + "/comunicar";
-        restTemplate.put(url, null);
+        String url = getFullUrl() + "/" + id + "/comunicar";
+        try {
+            restTemplate.put(url, null);
+        } catch (Exception e) {
+            System.err.println("Error al marcar como comunicado: " + e.getMessage());
+        }
     }
 }

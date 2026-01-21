@@ -19,17 +19,20 @@ public class ProveedorController {
     @Autowired private ProveedorService service;
     @Autowired private CentroService centroService;
 
+    private void addCommonData(Model model, UsuarioDTO usuario) {
+        CentroDTO centro = centroService.obtenerPorId(usuario.getIdCentro());
+        model.addAttribute("nombreCentro", (centro != null) ? centro.getDenominacion() : "Centro Aliros");
+        model.addAttribute("usuario", usuario);
+        model.addAttribute("activeLink", "proveedores");
+    }
+
     @GetMapping
     public String listar(Model model, HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/";
 
         model.addAttribute("listaProveedores", service.listar(usuario.getIdCentro()));
-
-        CentroDTO centro = centroService.obtenerPorId(usuario.getIdCentro());
-        model.addAttribute("nombreCentro", centro.getDenominacion());
-        model.addAttribute("usuario", usuario);
-
+        addCommonData(model, usuario);
         return "proveedores-panel";
     }
 
@@ -40,8 +43,8 @@ public class ProveedorController {
 
         ProveedorDTO dto = new ProveedorDTO();
         dto.setIdCentro(usuario.getIdCentro());
-
         model.addAttribute("proveedor", dto);
+        addCommonData(model, usuario);
         return "proveedores-form";
     }
 
@@ -51,6 +54,7 @@ public class ProveedorController {
         if (usuario == null) return "redirect:/";
 
         model.addAttribute("proveedor", service.obtener(cif, usuario.getIdCentro()));
+        addCommonData(model, usuario);
         return "proveedores-form";
     }
 
@@ -64,40 +68,32 @@ public class ProveedorController {
         return "redirect:/proveedores";
     }
 
-    // 1. Listar empleados de un proveedor
     @GetMapping("/{cif}/empleados")
     public String listarEmpleados(@PathVariable String cif, Model model, HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/";
 
-        // Obtenemos los empleados
         model.addAttribute("listaEmpleados", service.listarEmpleados(cif, usuario.getIdCentro()));
-
-        // Obtenemos datos de la empresa para el título
         model.addAttribute("proveedor", service.obtener(cif, usuario.getIdCentro()));
-
-        model.addAttribute("usuario", usuario);
-        return "proveedores-empleados-list"; // Nueva vista
+        addCommonData(model, usuario);
+        return "proveedores-empleados-list";
     }
 
-    // 2. Nuevo Empleado (Pre-rellenamos CIF y Centro)
     @GetMapping("/{cif}/empleados/nuevo")
     public String nuevoEmpleado(@PathVariable String cif, Model model, HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/";
 
         EmpleadoProveedorDTO emp = new EmpleadoProveedorDTO();
-        emp.setCifProveedor(cif); // Vinculamos a la empresa
+        emp.setCifProveedor(cif);
         emp.setIdCentro(usuario.getIdCentro());
 
         model.addAttribute("empleado", emp);
-        // Pasamos datos del proveedor para mostrar el nombre en el formulario
         model.addAttribute("proveedor", service.obtener(cif, usuario.getIdCentro()));
-
-        return "proveedores-empleados-form"; // Nueva vista
+        addCommonData(model, usuario);
+        return "proveedores-empleados-form";
     }
 
-    // 3. Guardar Empleado
     @PostMapping("/empleados/guardar")
     public String guardarEmpleado(@ModelAttribute EmpleadoProveedorDTO empleado, HttpSession session) {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
@@ -105,16 +101,12 @@ public class ProveedorController {
 
         empleado.setIdCentro(usuario.getIdCentro());
         service.guardarEmpleado(empleado);
-
-        // Redirigimos a la lista de empleados de ESA empresa
         return "redirect:/proveedores/" + empleado.getCifProveedor() + "/empleados";
     }
 
-    // 4. Eliminar Empleado
     @GetMapping("/empleados/eliminar/{id}")
     public String eliminarEmpleado(@PathVariable Integer id, @RequestParam String cif, HttpSession session) {
         if (session.getAttribute("usuarioLogueado") == null) return "redirect:/";
-
         service.eliminarEmpleado(id);
         return "redirect:/proveedores/" + cif + "/empleados";
     }

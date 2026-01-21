@@ -4,33 +4,28 @@ import com.aliro5.conlabac.web.dto.LlaveDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 @Service
 public class LlaveService {
 
-    @Value("${api.url.base}") // Toma "http://localhost:10081/api/centros"
-    private String baseUrl;
+    @Value("${api.url.base}")
+    private String baseUrl; // Recibe http://localhost:8080/api
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    // Transformamos la URL base para apuntar a /llaves
-    private String getApiUrl() {
-        if (baseUrl == null) return "http://localhost:10081/api/llaves";
-        return baseUrl.replace("/centros", "/llaves");
-    }
-
     public List<LlaveDTO> listarPorCentro(Integer idCentro) {
         try {
-            // GET http://localhost:10081/api/llaves?centroId=1
-            String url = getApiUrl() + "?centroId=" + idCentro;
+            // Construcción robusta: http://localhost:8080/api + /llaves + ?centroId=...
+            String url = baseUrl + "/llaves?centroId=" + idCentro;
+
             LlaveDTO[] response = restTemplate.getForObject(url, LlaveDTO[].class);
-            return response != null ? Arrays.asList(response) : Arrays.asList();
+            return response != null ? Arrays.asList(response) : Collections.emptyList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Arrays.asList();
+            System.err.println("Error llamando al API de llaves: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 }

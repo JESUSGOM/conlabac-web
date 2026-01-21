@@ -8,64 +8,68 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 @Service
 public class KeyMoveService {
 
-    @Value("${api.url.base}") // http://localhost:10081/api/centros
-    private String baseUrl;
+    @Value("${api.url.base}")
+    private String baseUrl; // http://localhost:8080/api
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private String getApiUrl() {
-        if (baseUrl == null) return "http://localhost:10081/api/keymoves";
-        return baseUrl.replace("/centros", "/keymoves");
+    // Ruta para movimientos (entregas/devoluciones)
+    private String getMovesUrl() {
+        return baseUrl + "/keymoves";
+    }
+
+    // Ruta para el inventario de llaves
+    private String getLlavesUrl() {
+        return baseUrl + "/llaves";
     }
 
     // 1. Obtener préstamos activos (sin devolver)
     public List<KeyMoveDTO> listarActivos(Integer idCentro) {
-        String url = getApiUrl() + "/activos?centroId=" + idCentro;
+        String url = getMovesUrl() + "/activos?centroId=" + idCentro;
         try {
             KeyMoveDTO[] res = restTemplate.getForObject(url, KeyMoveDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return res != null ? Arrays.asList(res) : Collections.emptyList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Arrays.asList();
+            System.err.println("Error en listarActivos: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 
-    // 2. Obtener llaves DISPONIBLES (para el desplegable)
+    // 2. Obtener llaves DISPONIBLES (CORREGIDO: apunta a /api/llaves/disponibles)
     public List<LlaveDTO> listarDisponibles(Integer idCentro) {
-        String url = getApiUrl() + "/disponibles?centroId=" + idCentro;
+        String url = getLlavesUrl() + "/disponibles?centroId=" + idCentro;
         try {
             LlaveDTO[] res = restTemplate.getForObject(url, LlaveDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return res != null ? Arrays.asList(res) : Collections.emptyList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Arrays.asList();
+            System.err.println("Error en listarDisponibles: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 
     // 3. Registrar Entrega (Salida)
     public void entregar(KeyMoveDTO dto) {
-        restTemplate.postForObject(getApiUrl(), dto, KeyMoveDTO.class);
+        restTemplate.postForObject(getMovesUrl(), dto, KeyMoveDTO.class);
     }
 
     // 4. Registrar Devolución (Entrada)
     public void devolver(Integer id) {
-        String url = getApiUrl() + "/" + id + "/devolver";
+        String url = getMovesUrl() + "/" + id + "/devolver";
         restTemplate.put(url, null);
     }
 
     public List<KeyMoveDTO> listarActivosHoy(Integer idCentro) {
-        // Llamamos a /api/keymoves/activos-hoy
-        String url = getApiUrl() + "/activos-hoy?centroId=" + idCentro;
+        String url = getMovesUrl() + "/activos-hoy?centroId=" + idCentro;
         try {
             KeyMoveDTO[] res = restTemplate.getForObject(url, KeyMoveDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return res != null ? Arrays.asList(res) : Collections.emptyList();
         } catch (Exception e) {
-            e.printStackTrace();
-            return Arrays.asList();
+            return Collections.emptyList();
         }
     }
 }

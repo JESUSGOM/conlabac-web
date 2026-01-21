@@ -9,10 +9,7 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/garaje")
@@ -29,8 +26,9 @@ public class GarajeController {
         model.addAttribute("listaVehiculos", service.listar());
 
         CentroDTO centro = centroService.obtenerPorId(usuario.getIdCentro());
-        model.addAttribute("nombreCentro", centro.getDenominacion());
+        model.addAttribute("nombreCentro", (centro != null) ? centro.getDenominacion() : "Centro Aliros");
         model.addAttribute("usuario", usuario);
+        model.addAttribute("activeLink", "garaje");
 
         return "garaje-panel";
     }
@@ -41,12 +39,19 @@ public class GarajeController {
         if (usuario == null) return "redirect:/";
 
         model.addAttribute("vehiculo", new GarajeDTO());
+        model.addAttribute("activeLink", "garaje");
         return "garaje-form";
     }
 
     @PostMapping("/guardar")
     public String guardar(@ModelAttribute GarajeDTO vehiculo, HttpSession session) {
-        if (session.getAttribute("usuarioLogueado") == null) return "redirect:/";
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
+        if (usuario == null) return "redirect:/";
+
+        // CORRECCIÓN: Asignamos el ID del centro del usuario logueado
+        // Asegúrate de que GarajeDTO.java tenga el método setIdCentro
+        vehiculo.setIdCentro(usuario.getIdCentro());
+
         service.guardar(vehiculo);
         return "redirect:/garaje";
     }

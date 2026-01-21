@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -14,39 +15,52 @@ import java.util.Map;
 public class EntreTurnoService {
 
     @Value("${api.url.base}")
-    private String baseUrl;
+    private String apiUrlBase; // http://localhost:8080/api
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private String getApiUrl() {
-        return baseUrl.replace("/centros", "/entreturnos");
+    private String getFullUrl() {
+        return apiUrlBase + "/entre-turnos";
     }
 
     public List<EntreTurnoDTO> listarHistorial(Integer idCentro) {
-        String url = getApiUrl() + "/historial?centroId=" + idCentro;
-        EntreTurnoDTO[] res = restTemplate.getForObject(url, EntreTurnoDTO[].class);
-        return res != null ? Arrays.asList(res) : Arrays.asList();
+        String url = getFullUrl() + "/historial?centroId=" + idCentro;
+        try {
+            EntreTurnoDTO[] res = restTemplate.getForObject(url, EntreTurnoDTO[].class);
+            return res != null ? Arrays.asList(res) : new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Error al cargar historial de relevos desde " + url + ": " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public List<EntreTurnoDTO> listarPendientes(Integer idCentro) {
-        String url = getApiUrl() + "/pendientes?centroId=" + idCentro;
-        EntreTurnoDTO[] res = restTemplate.getForObject(url, EntreTurnoDTO[].class);
-        return res != null ? Arrays.asList(res) : Arrays.asList();
+        String url = getFullUrl() + "/pendientes?centroId=" + idCentro;
+        try {
+            EntreTurnoDTO[] res = restTemplate.getForObject(url, EntreTurnoDTO[].class);
+            return res != null ? Arrays.asList(res) : new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Error al cargar relevos pendientes: " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public void guardar(EntreTurnoDTO dto) {
-        restTemplate.postForObject(getApiUrl(), dto, EntreTurnoDTO.class);
+        try {
+            restTemplate.postForObject(getFullUrl(), dto, EntreTurnoDTO.class);
+        } catch (Exception e) {
+            System.err.println("Error al guardar relevo: " + e.getMessage());
+        }
     }
 
-    // --- CORRECCIÓN IMPORTANTE ---
-    // Hemos cambiado el nombre del parámetro a 'dniUsuario' para recordar que
-    // a la API solo se le debe enviar el DNI (max 9 chars), NO el nombre completo.
     public void marcarLeido(Integer id, String dniUsuario) {
-        String url = getApiUrl() + "/" + id + "/leer";
-
-        Map<String, String> body = new HashMap<>();
-        // La API espera la clave "lector", pero le enviamos el DNI.
-        body.put("lector", dniUsuario);
-
-        restTemplate.put(url, body);
+        String url = getFullUrl() + "/" + id + "/leer";
+        try {
+            Map<String, String> body = new HashMap<>();
+            body.put("lector", dniUsuario);
+            restTemplate.put(url, body);
+        } catch (Exception e) {
+            System.err.println("Error al marcar relevo como leído: " + e.getMessage());
+        }
     }
 }

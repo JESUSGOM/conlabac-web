@@ -4,9 +4,9 @@ import com.aliro5.conlabac.web.dto.ContactoDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.util.Arrays;
 import java.util.List;
+import java.util.Collections;
 
 @Service
 public class ContactoService {
@@ -16,16 +16,17 @@ public class ContactoService {
     private final RestTemplate restTemplate = new RestTemplate();
 
     private String getApiUrl() {
-        return baseUrl.replace("/centros", "/contactos");
+        return baseUrl + "/contactos";
     }
 
     public List<ContactoDTO> listar(Integer idCentro) {
         String url = getApiUrl() + "?centroId=" + idCentro;
         try {
             ContactoDTO[] res = restTemplate.getForObject(url, ContactoDTO[].class);
-            return res != null ? Arrays.asList(res) : Arrays.asList();
+            return res != null ? Arrays.asList(res) : Collections.emptyList();
         } catch (Exception e) {
-            return Arrays.asList();
+            System.err.println("Error en ContactoService.listar: " + e.getMessage());
+            return Collections.emptyList();
         }
     }
 

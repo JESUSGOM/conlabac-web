@@ -8,24 +8,36 @@ import org.springframework.web.client.RestTemplate;
 public class ReportService {
 
     @Value("${api.url.base}")
-    private String baseUrl;
+    private String baseUrl; // http://localhost:8080/api
+
     private final RestTemplate restTemplate = new RestTemplate();
 
     private String getApiUrl() {
-        return baseUrl.replace("/centros", "/reports");
+        // Apuntamos directamente a la ruta definida en el Backend
+        return baseUrl + "/reports";
     }
 
-    // Método existente (Movimientos del día)
+    // Método para Movimientos del día
     public byte[] descargarPdfMovimientos(Integer idCentro) {
         String url = getApiUrl() + "/movimientos/pdf?centroId=" + idCentro;
-        return restTemplate.getForObject(url, byte[].class);
+        try {
+            return restTemplate.getForObject(url, byte[].class);
+        } catch (Exception e) {
+            System.err.println("Error descargando PDF movimientos: " + e.getMessage());
+            return null;
+        }
     }
 
-    // MÉTODO: INFORME MENSUAL  ---
+    // MÉTODO: INFORME MENSUAL
     public byte[] descargarInformeMensual(int mes, int anio, int idCentro) {
-        // Construimos la URL manualmente para evitar el error de UriComponentsBuilder
+        // Construimos la URL hacia el endpoint /api/reports/mensual
         String url = getApiUrl() + "/mensual?mes=" + mes + "&anio=" + anio + "&centroId=" + idCentro;
 
-        return restTemplate.getForObject(url, byte[].class);
+        try {
+            return restTemplate.getForObject(url, byte[].class);
+        } catch (Exception e) {
+            System.err.println("Error descargando Informe Mensual: " + e.getMessage());
+            return null;
+        }
     }
 }

@@ -23,11 +23,14 @@ public class ContactoController {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/";
 
-        model.addAttribute("listaContactos", service.listar(usuario.getIdCentro()));
+        Integer idCentro = usuario.getIdCentro();
+        model.addAttribute("listaContactos", service.listar(idCentro));
 
-        CentroDTO centro = centroService.obtenerPorId(usuario.getIdCentro());
-        model.addAttribute("nombreCentro", centro.getDenominacion());
+        CentroDTO centro = centroService.obtenerPorId(idCentro);
+        model.addAttribute("nombreCentro", (centro != null) ? centro.getDenominacion() : "Centro Aliros");
+
         model.addAttribute("usuario", usuario);
+        model.addAttribute("activeLink", "contactos"); // Importante para el menú
 
         return "contactos-panel";
     }
@@ -41,14 +44,17 @@ public class ContactoController {
         dto.setIdCentro(usuario.getIdCentro());
 
         model.addAttribute("contacto", dto);
+        model.addAttribute("activeLink", "contactos");
         return "contactos-form";
     }
 
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable Integer id, Model model, HttpSession session) {
-        if (session.getAttribute("usuarioLogueado") == null) return "redirect:/";
+        UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
+        if (usuario == null) return "redirect:/";
 
         model.addAttribute("contacto", service.obtener(id));
+        model.addAttribute("activeLink", "contactos");
         return "contactos-form";
     }
 
@@ -57,6 +63,7 @@ public class ContactoController {
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/";
 
+        // Aseguramos que el contacto se guarde en el centro del usuario actual
         contacto.setIdCentro(usuario.getIdCentro());
         service.guardar(contacto);
         return "redirect:/contactos";

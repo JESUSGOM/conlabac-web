@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -12,24 +13,38 @@ import java.util.List;
 public class IncidenciaService {
 
     @Value("${api.url.base}")
-    private String baseUrl;
+    private String apiUrlBase; // http://localhost:8080/api
+
     private final RestTemplate restTemplate = new RestTemplate();
 
-    private String getApiUrl() {
-        return baseUrl.replace("/centros", "/incidencias");
+    private String getFullUrl() {
+        return apiUrlBase + "/incidencias";
     }
 
     public List<IncidenciaDTO> listarPorCentro(Integer idCentro) {
-        String url = getApiUrl() + "?centroId=" + idCentro;
-        IncidenciaDTO[] res = restTemplate.getForObject(url, IncidenciaDTO[].class);
-        return res != null ? Arrays.asList(res) : Arrays.asList();
+        String url = getFullUrl() + "?centroId=" + idCentro;
+        try {
+            IncidenciaDTO[] res = restTemplate.getForObject(url, IncidenciaDTO[].class);
+            return (res != null) ? Arrays.asList(res) : new ArrayList<>();
+        } catch (Exception e) {
+            System.err.println("Error al cargar incidencias desde " + url + ": " + e.getMessage());
+            return new ArrayList<>();
+        }
     }
 
     public void guardar(IncidenciaDTO dto) {
-        restTemplate.postForObject(getApiUrl(), dto, IncidenciaDTO.class);
+        try {
+            restTemplate.postForObject(getFullUrl(), dto, IncidenciaDTO.class);
+        } catch (Exception e) {
+            System.err.println("Error al guardar incidencia: " + e.getMessage());
+        }
     }
 
     public IncidenciaDTO obtenerPorId(Integer id) {
-        return restTemplate.getForObject(getApiUrl() + "/" + id, IncidenciaDTO.class);
+        try {
+            return restTemplate.getForObject(getFullUrl() + "/" + id, IncidenciaDTO.class);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

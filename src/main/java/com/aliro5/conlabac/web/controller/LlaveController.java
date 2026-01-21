@@ -23,19 +23,24 @@ public class LlaveController {
 
     @GetMapping
     public String listarInventario(Model model, HttpSession session) {
-        // 1. Seguridad: Verificar Login
+        // 1. Seguridad: Verificar si hay sesión activa
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
-        if (usuario == null) return "redirect:/";
+        if (usuario == null) {
+            return "redirect:/";
+        }
 
-        // 2. Obtener datos
+        // 2. Obtener el ID del centro usando el método correcto de tu DTO
         Integer idCentro = usuario.getIdCentro();
+
+        // 3. Cargar la lista de llaves desde el servicio
         model.addAttribute("listaLlaves", llaveService.listarPorCentro(idCentro));
 
-        // 3. Obtener nombre del centro para el título
+        // 4. Obtener datos del centro para mostrar el nombre en la cabecera
         CentroDTO centro = centroService.obtenerPorId(idCentro);
-        model.addAttribute("nombreCentro", centro.getDenominacion());
+        model.addAttribute("nombreCentro", (centro != null) ? centro.getDenominacion() : "Centro Aliros");
 
-        // 4. Pasar usuario a la vista (para el menú superior)
+        // 5. Atributos necesarios para el menú (fragments.html)
+        model.addAttribute("activeLink", "llaves");
         model.addAttribute("usuario", usuario);
 
         return "llaves-list";

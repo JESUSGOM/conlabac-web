@@ -1,9 +1,43 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Informes Mensuales</title>
+    <title>Informes Mensuales - Aliros</title>
+    <div th:replace="~{fragments :: head}"></div>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+    <style>
+        body {
+            background-color: #f0f2f5;
+        }
+        .card-informe {
+            border-radius: 20px;
+            overflow: hidden;
+            border: none;
+        }
+        .logo-informe {
+            height: 70px;
+            margin-bottom: 15px;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border: none;
+            padding: 15px;
+            transition: all 0.3s;
+        }
+        .btn-danger:hover {
+            background-color: #bb2d3b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+        .form-select-lg {
+            border-radius: 10px;
+            border: 1px solid #dee2e6;
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -11,24 +45,27 @@
 
 <div class="container mt-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-6 col-lg-5 animate__animated animate__fadeIn">
 
             <div class="text-center mb-4">
-                <h2 class="fw-bold text-dark">Generación de Informes</h2>
-                <p class="text-muted" th:text="${nombreCentro}">Centro</p>
+                <img th:src="@{/images/logoitcizq.png}" class="logo-informe" alt="Aliros Logo">
+                <h2 class="fw-bold text-dark mb-0">Generación de Informes</h2>
+                <p class="text-muted fw-bold text-uppercase small mt-1" th:text="${nombreCentro}">Centro</p>
             </div>
 
-            <div class="card shadow-lg border-0">
-                <div class="card-header bg-danger text-white py-3 text-center">
-                    <h5 class="mb-0 fw-bold"><i class="bi bi-file-earmark-pdf-fill"></i> Informe Mensual de Servicio</h5>
+            <div class="card card-informe shadow-lg">
+                <div class="card-header bg-danger text-white py-3 text-center border-0">
+                    <h5 class="mb-0 fw-bold">
+                        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Informe Mensual de Servicio
+                    </h5>
                 </div>
-                <div class="card-body p-5">
+                <div class="card-body p-4 p-lg-5 bg-white">
 
                     <form action="/admin/informes/descargar" method="post">
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Seleccione el Año</label>
-                            <select name="anio" class="form-select form-select-lg">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Año de Consulta</label>
+                            <select name="anio" class="form-select form-select-lg shadow-none">
                                 <option th:each="a : ${anios}"
                                         th:value="${a}"
                                         th:text="${a}"
@@ -37,8 +74,8 @@
                         </div>
 
                         <div class="mb-4">
-                            <label class="form-label fw-bold text-secondary">Seleccione el Mes</label>
-                            <select name="mes" class="form-select form-select-lg">
+                            <label class="form-label fw-bold text-secondary small text-uppercase">Mes de la Actividad</label>
+                            <select name="mes" class="form-select form-select-lg shadow-none">
                                 <option th:each="entry : ${meses}"
                                         th:value="${entry.key}"
                                         th:text="${entry.value}"
@@ -48,16 +85,27 @@
 
                         <div class="d-grid gap-2 mt-5">
                             <button type="submit" class="btn btn-danger btn-lg fw-bold">
-                                <i class="bi bi-download"></i> Descargar PDF
+                                <i class="bi bi-download me-2"></i> DESCARGAR REPORTE PDF
                             </button>
                         </div>
 
-                        <div class="text-center mt-3">
-                            <small class="text-muted">Se generará un archivo con el resumen completo de actividad.</small>
+                        <div class="text-center mt-4">
+                            <div class="p-2 rounded-3 bg-light border">
+                                <small class="text-muted">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    El documento incluirá resumen de visitas, llaves, paquetería e incidencias.
+                                </small>
+                            </div>
                         </div>
 
                     </form>
                 </div>
+            </div>
+
+            <div class="text-center mt-4 pb-5">
+                <a href="/home" class="text-decoration-none text-secondary small">
+                    <i class="bi bi-arrow-left"></i> Volver al Panel Principal
+                </a>
             </div>
 
         </div>

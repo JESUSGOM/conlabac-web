@@ -20,7 +20,7 @@ public class LoginService {
     public UsuarioDTO login(String dni, String clave) {
         // Truco: Como la base es ".../api/centros", subimos un nivel para ir a ".../api/auth/login"
         // Lo ideal sería tener una variable solo para el host, pero esto funciona rápido:
-        String loginUrl = "http://localhost:10081/api/auth/login";
+        String loginUrl = "http://localhost:8080/api/auth/login";
 
         // Preparamos el JSON a enviar
         Map<String, String> credenciales = new HashMap<>();

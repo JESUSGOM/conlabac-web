@@ -1,7 +1,7 @@
 package com.aliro5.conlabac.web.controller;
 
 import com.aliro5.conlabac.web.dto.CentroDTO;
-import com.aliro5.conlabac.web.dto.ProveedorDTO; // <--- Importante
+import com.aliro5.conlabac.web.dto.ProveedorDTO;
 import com.aliro5.conlabac.web.dto.UsuarioDTO;
 import com.aliro5.conlabac.web.service.CentroService;
 import com.aliro5.conlabac.web.service.ProveedorService;
@@ -28,34 +28,27 @@ public class TrabajadoresController {
 
     @GetMapping
     public String listarGlobal(Model model, HttpSession session) {
-        // 1. Seguridad: Verificar usuario logueado
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
         if (usuario == null) return "redirect:/";
 
         Integer idCentro = usuario.getIdCentro();
 
-        // 2. Cargamos la lista de TODOS los trabajadores del centro
         model.addAttribute("listaTrabajadores", proveedorService.listarTodosTrabajadores(idCentro));
 
-        // 3. NUEVO: Cargamos las empresas para poder mostrar sus Nombres en lugar de sus CIFs
-        // Obtenemos la lista de proveedores del centro
         List<ProveedorDTO> empresas = proveedorService.listar(idCentro);
-
-        // Convertimos la lista en un Mapa (Diccionario): Clave=CIF -> Valor=NombreEmpresa
         Map<String, String> mapaEmpresas = empresas.stream()
                 .collect(Collectors.toMap(
-                        ProveedorDTO::getCif,           // La clave del mapa será el CIF
-                        ProveedorDTO::getDenominacion,  // El valor será el Nombre
-                        (existente, reemplazo) -> existente // En caso de duplicados, mantenemos el primero
+                        ProveedorDTO::getCif,
+                        ProveedorDTO::getDenominacion,
+                        (existente, reemplazo) -> existente
                 ));
 
-        // Pasamos el mapa a la vista para usarlo en el HTML
         model.addAttribute("mapaEmpresas", mapaEmpresas);
 
-        // 4. Datos del Centro y Usuario para la cabecera
         CentroDTO centro = centroService.obtenerPorId(idCentro);
-        model.addAttribute("nombreCentro", centro.getDenominacion());
+        model.addAttribute("nombreCentro", (centro != null) ? centro.getDenominacion() : "Centro Aliros");
         model.addAttribute("usuario", usuario);
+        model.addAttribute("activeLink", "trabajadores");
 
         return "trabajadores-list";
     }

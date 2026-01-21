@@ -1,51 +1,65 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:fragment="head">
     <meta charset="UTF-8">
+    <link rel="shortcut icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+    <link rel="icon" th:href="@{/images/favicon.ico}" type="image/x-icon">
+    <link rel="apple-touch-icon" th:href="@{/images/favicon.ico}">
+    <title>Aliros</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body>
 
 <nav th:fragment="menu(activeLink)" class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm py-2 w-100" style="position: relative; overflow: visible !important;">
 
     <style>
-        /* Contenedor fijo que flota sobre toda la pantalla */
+        /* Contenedor fijo para la marca de agua */
         .marca-agua-container {
-            position: fixed;       /* Se queda fijo al hacer scroll */
-            top: 50%;              /* Centrado vertical */
+            position: fixed;
+            top: 50%;
             left: 0;
-            width: 100%;           /* Ocupa todo el ancho */
-            height: 0;             /* Altura 0 para no empujar contenido */
-            z-index: -1;           /* Se va al FONDO, detrás de todo */
+            width: 100%;
+            height: 0;
+            z-index: -1;
             display: flex;
-            justify-content: space-between; /* Separa los logos a los extremos */
-            transform: translateY(-50%);    /* Ajuste exacto del centro */
-            pointer-events: none;  /* Permite hacer clic a través de las imágenes */
-            padding: 0 20px;       /* Margen lateral */
+            justify-content: space-between;
+            transform: translateY(-50%);
+            pointer-events: none;
+            padding: 0 40px;
         }
 
         .marca-agua-img {
-            width: 200px;          /* TAMAÑO DE LOS LOGOS DE FONDO (Ajusta aquí) */
-            opacity: 0.15;         /* TRANSPARENCIA (0.1 muy suave - 1.0 sólido) */
-            filter: grayscale(100%); /* Opcional: Blanco y negro para no molestar */
+            width: 250px;
+            opacity: 0.10;
         }
 
-        /* Aseguramos que la barra de menú esté siempre encima del fondo */
         .navbar-content-wrapper {
             position: relative;
             z-index: 100;
         }
+
+        .navbar-brand img {
+            transition: transform 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .navbar-brand:hover img {
+            transform: scale(1.1) rotate(5deg);
+        }
     </style>
 
     <div class="marca-agua-container">
-        <img th:src="@{/img/logoitcizq.png}" src="/img/logoitcizq.png" class="marca-agua-img" alt="">
-
-        <img th:src="@{/img/Envera_Logo_79_30.png}" src="/img/Envera_Logo_79_30.png" class="marca-agua-img" alt="">
+        <img th:src="@{/images/logoitcizq.png}" src="/images/logoitcizq.png" class="marca-agua-img" alt="Logo Aliros">
+        <img th:src="@{/images/Envera_Logo_79_30.png}" src="/images/Envera_Logo_79_30.png" class="marca-agua-img" alt="Logo Envera">
     </div>
 
     <div class="container-fluid px-4 navbar-content-wrapper">
 
-        <a class="navbar-brand fw-bold fs-4" href="/home">
-            <i class="bi bi-building"></i> Aliros
+        <a class="navbar-brand fw-bold fs-4 d-flex align-items-center" href="/home">
+            <img th:src="@{/images/logoitcizq.png}" alt="Logo" style="height: 35px; margin-right: 12px;">
+            Aliros
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -54,17 +68,12 @@
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'movimientos'} ? 'active'" href="/movimientos">Visitantes</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'keymoves'} ? 'active'" href="/keymoves">Llaves</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'telefonos'} ? 'active'" href="/telefonos">Llamadas</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'incidencias'} ? 'active'" href="/incidencias">Incidencias</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'paqueteria'} ? 'active'" href="/paqueteria">Correspondencia</a></li>
-
-                <li class="nav-item">
-                    <a class="nav-link fs-5" th:classappend="${activeLink == 'relevos'} ? 'active'" href="/relevos">Turnos</a>
-                </li>
-
+                <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'relevos'} ? 'active'" href="/relevos">Turnos</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'proveedores'} ? 'active'" href="/proveedores">Proveedores</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'trabajadores'} ? 'active'" href="/trabajadores">Trabajadores</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'garaje'} ? 'active'" href="/garaje">Garaje</a></li>
@@ -76,27 +85,16 @@
                 </li>
 
                 <li class="nav-item" th:if="${session.usuarioLogueado.tipo == 'Z' or session.usuarioLogueado.tipo == 'Y'}">
-                    <a class="nav-link fs-5 text-warning fw-bold" th:classappend="${activeLink == 'aperturas'} ? 'active'" href="/aperturas">
-                        Aperturas
-                    </a>
+                    <a class="nav-link fs-5 text-warning fw-bold" th:classappend="${activeLink == 'aperturas'} ? 'active'" href="/aperturas">Aperturas</a>
                 </li>
-
                 <li class="nav-item ms-2" th:if="${session.usuarioLogueado.tipo == 'Z'}">
-                    <a class="nav-link fs-5 text-warning fw-bold" th:classappend="${activeLink == 'usuarios'} ? 'active'" href="/admin/usuarios">
-                        Usuarios
-                    </a>
+                    <a class="nav-link fs-5 text-warning fw-bold" th:classappend="${activeLink == 'usuarios'} ? 'active'" href="/admin/usuarios">Usuarios</a>
                 </li>
-
                 <li class="nav-item" th:if="${session.usuarioLogueado.tipo == 'Z'}">
-                    <a class="nav-link fs-5 text-warning fw-bold" th:classappend="${activeLink == 'configuracion'} ? 'active'" href="/admin/configuracion">
-                        Config
-                    </a>
+                    <a class="nav-link fs-5 text-warning fw-bold" th:classappend="${activeLink == 'configuracion'} ? 'active'" href="/admin/configuracion">Config</a>
                 </li>
-
                 <li class="nav-item" th:if="${session.usuarioLogueado.tipo == 'Z' or session.usuarioLogueado.tipo == 'A'}">
-                    <a class="nav-link fs-5 text-danger fw-bold" th:classappend="${activeLink == 'informes'} ? 'active'" href="/admin/informes">
-                        Informes
-                    </a>
+                    <a class="nav-link fs-5 text-danger fw-bold" th:classappend="${activeLink == 'informes'} ? 'active'" href="/admin/informes">Informes</a>
                 </li>
             </ul>
 
@@ -104,9 +102,7 @@
                 <span class="text-white-50 me-2" th:with="hora=${T(java.time.LocalTime).now().getHour()}">
                     <span th:text="${hora < 13 ? 'Buenos días,' : 'Buenas tardes,'}">Hola,</span>
                 </span>
-                <span class="fw-bold me-4" th:text="${session.usuarioLogueado.nombre} + ' ' + ${session.usuarioLogueado.apellido1}">
-                    Usuario
-                </span>
+                <span class="fw-bold me-4" th:text="${session.usuarioLogueado.nombre} + ' ' + ${session.usuarioLogueado.apellido1}">Usuario</span>
                 <a href="/logout" class="btn btn-outline-light btn-sm">Salir</a>
             </div>
         </div>
@@ -120,6 +116,30 @@
             window.history.pushState(null, "", window.location.href);
         };
     });
+
+    // Función global para diálogos de confirmación de ALIROS con LOGO personalizado
+    function confirmarAccionAliros(titulo, texto, callback) {
+        Swal.fire({
+            title: '<strong>' + titulo + '</strong>',
+            text: texto,
+            // --- CAMBIO: Usamos imagen personalizada en lugar de icono ---
+            imageUrl: '/images/logoAlirossinfondo.png',
+            imageWidth: 100,
+            imageHeight: 100,
+            imageAlt: 'Aliros Logo',
+            // ------------------------------------------------------------
+            showCancelButton: true,
+            confirmButtonColor: '#198754', // Verde success
+            cancelButtonColor: '#6c757d',  // Gris
+            confirmButtonText: 'Aceptar',
+            cancelButtonText: 'Cancelar',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+                callback();
+            }
+        });
+    }
 </script>
 
 </body>

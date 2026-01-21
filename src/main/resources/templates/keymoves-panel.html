@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>Control de Llaves</title>
+  <div th:replace="~{fragments :: head}"></div>
+  <title>Control de Llaves - Aliros</title>
+
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
   <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
-
   <link th:href="@{/css/style.css}" rel="stylesheet">
 
   <style>
-    /* Ajuste específico para esta tabla (Cabecera oscura) */
     table.dataTable thead th {
       background-color: #212529;
       color: white;
@@ -23,7 +23,6 @@
 <div th:replace="~{fragments :: menu('keymoves')}"></div>
 
 <div class="container-fluid container-90">
-
   <div class="d-flex justify-content-between align-items-center page-header">
     <div>
       <h2 class="text-primary fw-bold mb-0">Control de Llaves</h2>
@@ -59,23 +58,15 @@
         </thead>
         <tbody>
         <tr th:each="prestamo : ${listaPrestamos}">
-          <td>
-            <span class="badge bg-dark fs-6" th:text="${prestamo.codigoLlave}">K-01</span>
-          </td>
-
+          <td><span class="badge bg-dark fs-6" th:text="${prestamo.codigoLlave}">K-01</span></td>
           <td th:text="${prestamo.nombre}">Juan</td>
           <td th:text="${prestamo.apellido1} + ' ' + (${prestamo.apellido2} ?: '')">Pérez</td>
-
-          <td class="text-nowrap" th:text="${prestamo.fechaEntrega} + ' - ' + ${prestamo.horaEntrega}">
-            Fecha
-          </td>
-
+          <td class="text-nowrap" th:text="${prestamo.fechaEntrega} + ' - ' + ${prestamo.horaEntrega}">Fecha</td>
           <td class="text-center">
-            <a th:href="@{/keymoves/devolver/{id}(id=${prestamo.id})}"
-               class="btn btn-success btn-sm btn-xs"
-               onclick="return confirm('¿Confirmar la devolución de esta llave?');">
+            <button type="button" class="btn btn-success btn-sm"
+                    th:onclick="|confirmarAccionAliros('Aliros', '¿Confirmar la devolución de esta llave?', () => { window.location.href='/keymoves/devolver/${prestamo.id}' })|">
               <i class="bi bi-box-arrow-in-left"></i> Devolver
-            </a>
+            </button>
           </td>
         </tr>
         </tbody>
@@ -96,17 +87,14 @@
     $('#tablaPrestamos').DataTable({
       responsive: true,
       pageLength: 10,
-      scrollY: '55vh',        // Altura del scroll vertical
+      scrollY: '55vh',
       scrollCollapse: true,
-      lengthChange: false,    // Ocultar selector de cantidad por página para limpiar interfaz
-      language: {
-        url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-      }
+      lengthChange: false,
+      language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
     });
   });
 </script>
 
 <div th:replace="~{fragments :: bloquearNavegacion}"></div>
-
 </body>
 </html>

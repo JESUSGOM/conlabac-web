@@ -11,38 +11,35 @@ import java.util.List;
 @Service
 public class CentroService {
 
-    @Value("${api.url.base}")
-    private String apiUrl;
+    @Value("${api.url.base:http://localhost:8080/api}")
+    private String apiUrlBase;
 
     private final RestTemplate restTemplate = new RestTemplate();
 
-    public List<CentroDTO> obtenerTodos() {
-        // Hace una petición GET a http://localhost:10081/api/centros
-        CentroDTO[] respuesta = restTemplate.getForObject(apiUrl, CentroDTO[].class);
-
-        if (respuesta != null) {
-            return Arrays.asList(respuesta);
-        } else {
-            return Arrays.asList();
-        }
+    // Construimos la URL específica para este servicio
+    private String getFullUrl() {
+        return apiUrlBase + "/centros";
     }
 
-    // --- NUEVO MÉTODO PARA EDITAR ---
+    public List<CentroDTO> obtenerTodos() {
+        // GET http://localhost:8080/api/centros
+        CentroDTO[] respuesta = restTemplate.getForObject(getFullUrl(), CentroDTO[].class);
+        return (respuesta != null) ? Arrays.asList(respuesta) : Arrays.asList();
+    }
+
     public CentroDTO obtenerPorId(Integer id) {
-        // GET http://localhost:10081/api/centros/{id}
-        // Pide un único objeto a la API para rellenar el formulario
-        return restTemplate.getForObject(apiUrl + "/" + id, CentroDTO.class);
+        // GET http://localhost:8080/api/centros/{id}
+        String url = getFullUrl() + "/" + id;
+        return restTemplate.getForObject(url, CentroDTO.class);
     }
 
     public void guardar(CentroDTO centro) {
-        // Enviamos el objeto 'centro' a la API usando POST.
-        // Si el objeto lleva ID, el backend (JPA) lo actualizará.
-        // Si no lleva ID, lo creará nuevo.
-        restTemplate.postForObject(apiUrl, centro, CentroDTO.class);
+        // POST http://localhost:8080/api/centros
+        restTemplate.postForObject(getFullUrl(), centro, CentroDTO.class);
     }
 
     public void eliminar(Integer id) {
-        // Llama a DELETE http://localhost:10081/api/centros/{id}
-        restTemplate.delete(apiUrl + "/" + id);
+        // DELETE http://localhost:8080/api/centros/{id}
+        restTemplate.delete(getFullUrl() + "/" + id);
     }
 }
