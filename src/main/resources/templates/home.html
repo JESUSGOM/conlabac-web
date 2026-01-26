@@ -66,6 +66,17 @@
             margin-bottom: 40px;
             box-shadow: 0 4px 15px rgba(0,0,0,0.02);
         }
+
+        /* Animación para alertar de pendientes */
+        .pulse-stat {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -93,7 +104,9 @@
                         <div style="z-index: 2; position: relative;">
                             <h6 class="text-uppercase text-muted fw-bold small mb-3">Relevos</h6>
                             <div class="d-flex align-items-baseline">
-                                <h2 class="mb-0 fw-bold text-danger display-5" th:text="${stats.relevosPendientes}">0</h2>
+                                <h2 class="mb-0 fw-bold text-danger display-5"
+                                    th:classappend="${stats.relevosPendientes > 0} ? 'pulse-stat'"
+                                    th:text="${stats.relevosPendientes}">0</h2>
                                 <small class="text-danger fw-bold ms-2">Pendientes</small>
                             </div>
                             <p class="text-muted small mt-2 mb-0">Mensajes del turno anterior</p>
@@ -111,7 +124,9 @@
                         <div style="z-index: 2; position: relative;">
                             <h6 class="text-uppercase text-muted fw-bold small mb-3">Correspondencia</h6>
                             <div class="d-flex align-items-baseline">
-                                <h2 class="mb-0 fw-bold text-warning display-5" th:text="${stats.paquetesPendientes}">0</h2>
+                                <h2 class="mb-0 fw-bold text-warning display-5"
+                                    th:classappend="${stats.paquetesPendientes > 0} ? 'pulse-stat'"
+                                    th:text="${stats.paquetesPendientes}">0</h2>
                                 <small class="text-warning fw-bold ms-2">Paquetes</small>
                             </div>
                             <p class="text-muted small mt-2 mb-0">Pendientes de entrega</p>
@@ -129,7 +144,9 @@
                         <div style="z-index: 2; position: relative;">
                             <h6 class="text-uppercase text-muted fw-bold small mb-3">Control de Llaves</h6>
                             <div class="d-flex align-items-baseline">
-                                <h2 class="mb-0 fw-bold text-primary display-5" th:text="${stats.llavesPrestadas}">0</h2>
+                                <h2 class="mb-0 fw-bold text-primary display-5"
+                                    th:classappend="${stats.llavesPendientes > 0} ? 'pulse-stat'"
+                                    th:text="${stats.llavesPendientes}">0</h2>
                                 <small class="text-primary fw-bold ms-2">Fuera</small>
                             </div>
                             <p class="text-muted small mt-2 mb-0">Registros sin devolver</p>
@@ -147,10 +164,11 @@
                         <div style="z-index: 2; position: relative;">
                             <h6 class="text-uppercase text-muted fw-bold small mb-3">Ocupación Planta</h6>
                             <div class="d-flex align-items-baseline">
-                                <h2 class="mb-0 fw-bold text-success display-5" th:text="${stats.visitasDentro + stats.contratasDentro}">0</h2>
+                                <h2 class="mb-0 fw-bold text-success display-5"
+                                    th:text="${stats.visitasDentro + stats.contratasDentro}">0</h2>
                                 <small class="text-success fw-bold ms-2">Personas</small>
                             </div>
-                            <p class="text-muted small mt-2 mb-0">Visitantes actualmente dentro</p>
+                            <p class="text-muted small mt-2 mb-0">Personal actualmente dentro</p>
                         </div>
                         <i class="bi bi-people-fill icon-large text-success"></i>
                     </div>

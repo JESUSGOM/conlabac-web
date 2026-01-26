@@ -19,56 +19,53 @@ public class HomeController {
     private CentroService centroService;
 
     @Value("${api.url.base}")
-    private String apiUrlBase; // Debería ser http://localhost:8080/api
+    private String apiUrlBase; // http://localhost:8080/api
 
     private final RestTemplate restTemplate = new RestTemplate();
 
     @GetMapping("/home")
     public String home(Model model, HttpSession session) {
-        // Recuperamos el usuario de la sesión
+        // 1. Verificación de Seguridad: Recuperamos el usuario de la sesión
         UsuarioDTO usuario = (UsuarioDTO) session.getAttribute("usuarioLogueado");
 
-        // Si la sesión ha expirado o no hay usuario, volvemos a la raíz (login)
         if (usuario == null) {
             return "redirect:/";
         }
 
-        // 1. Obtener Estadísticas del Dashboard
-        // Construimos la URL: http://localhost:8080/api/dashboard/stats?centroId=X
-        String statsUrl = apiUrlBase + "/dashboard/stats?centroId=" + usuario.getIdCentro();
+        Integer idCentro = usuario.getIdCentro();
 
+        // 2. Obtener Estadísticas del Dashboard (incluyendo el nuevo conteo de llaves)
         DashboardStatsDTO stats = new DashboardStatsDTO();
         try {
-            // Intentamos obtener datos reales del API
+            // URL esperada: http://localhost:8080/api/dashboard/stats?centroId=X
+            String statsUrl = apiUrlBase + "/dashboard/stats?centroId=" + idCentro;
             DashboardStatsDTO respuesta = restTemplate.getForObject(statsUrl, DashboardStatsDTO.class);
             if (respuesta != null) {
                 stats = respuesta;
             }
         } catch (Exception e) {
-            // Si el endpoint /dashboard/stats no existe o falla, mostramos estadísticas a 0
-            System.err.println("Aviso: No se pudieron cargar las estadísticas de la API. Mostrando valores por defecto.");
+            System.err.println("Aviso: Error al conectar con el endpoint de estadísticas: " + e.getMessage());
+            // El objeto 'stats' ya está inicializado con valores por defecto (0)
         }
         model.addAttribute("stats", stats);
 
-        // 2. Datos del Centro (Nombre ITC Tenerife / Las Palmas)
+        // 3. Obtener Datos del Centro (Nombre e información general)
         try {
-            CentroDTO centro = centroService.obtenerPorId(usuario.getIdCentro());
+            CentroDTO centro = centroService.obtenerPorId(idCentro);
             if (centro != null) {
                 model.addAttribute("nombreCentro", centro.getDenominacion());
                 model.addAttribute("centro", centro);
             } else {
-                model.addAttribute("nombreCentro", "Centro " + usuario.getIdCentro());
+                model.addAttribute("nombreCentro", "Centro descononcido (" + idCentro + ")");
             }
         } catch (Exception e) {
-            // Si falla la carga del centro, ponemos un nombre genérico para no romper la web
-            model.addAttribute("nombreCentro", "Centro " + usuario.getIdCentro());
-            System.err.println("Error al obtener nombre del centro: " + e.getMessage());
+            model.addAttribute("nombreCentro", "Error al cargar centro");
+            System.err.println("Error al obtener datos del centro: " + e.getMessage());
         }
 
-        // 3. Pasamos el usuario a la vista
+        // 4. Pasar datos de sesión y usuario a la vista
         model.addAttribute("usuario", usuario);
 
-        // IMPORTANTE: Se devuelve "home" porque tu archivo es home.html
         return "home";
     }
 }
