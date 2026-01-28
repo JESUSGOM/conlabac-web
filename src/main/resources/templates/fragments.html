@@ -7,8 +7,13 @@
     <link rel="apple-touch-icon" th:href="@{/images/favicon.ico}">
     <title>Aliros</title>
 
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </head>
 <body>
 
@@ -48,6 +53,16 @@
         .navbar-brand:hover img {
             transform: scale(1.1) rotate(5deg);
         }
+
+        .navbar-collapse {
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .nav-link.active {
+            color: #fff !important;
+            border-bottom: 2px solid #fff;
+        }
     </style>
 
     <div class="marca-agua-container">
@@ -71,13 +86,26 @@
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'movimientos'} ? 'active'" href="/movimientos">Visitantes</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'keymoves'} ? 'active'" href="/keymoves">Llaves</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'telefonos'} ? 'active'" href="/telefonos">Llamadas</a></li>
-                <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'incidencias'} ? 'active'" href="/incidencias">Incidencias</a></li>
+
+                <li class="nav-item">
+                    <a class="nav-link fs-5" th:classappend="${activeLink == 'incidencias'} ? 'active'" href="/email/incidencia">
+                        Incidencias
+                    </a>
+                </li>
+
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'paqueteria'} ? 'active'" href="/paqueteria">Correspondencia</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'relevos'} ? 'active'" href="/relevos">Turnos</a></li>
+
+                <li class="nav-item">
+                    <a class="nav-link fs-5 text-info" th:classappend="${activeLink == 'email'} ? 'active'" href="/email">
+                        <i class="bi bi-envelope-at"></i> Email
+                    </a>
+                </li>
+
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'proveedores'} ? 'active'" href="/proveedores">Proveedores</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'trabajadores'} ? 'active'" href="/trabajadores">Trabajadores</a></li>
-                <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'garaje'} ? 'active'" href="/garaje">Garaje</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'contratas'} ? 'active'" href="/contratas">Contratas</a></li>
+                <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'garaje'} ? 'active'" href="/garaje">Garaje</a></li>
                 <li class="nav-item"><a class="nav-link fs-5" th:classappend="${activeLink == 'contactos'} ? 'active'" href="/contactos">Contactos</a></li>
 
                 <li class="nav-item d-none d-lg-block d-flex align-items-center mx-2">
@@ -109,28 +137,53 @@
     </div>
 </nav>
 
+<div th:fragment="toasts" class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 2000">
+    <div id="toastOk" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" th:if="${mensajeOk}">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-check-circle-fill me-2"></i> <span th:text="${mensajeOk}"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+    <div id="toastError" class="toast align-items-center text-white bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" th:if="${mensajeError}">
+        <div class="d-flex">
+            <div class="toast-body">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i> <span th:text="${mensajeError}"></span>
+            </div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
 <script th:fragment="bloquearNavegacion">
     document.addEventListener("DOMContentLoaded", function() {
         window.history.pushState(null, "", window.location.href);
         window.onpopstate = function() {
             window.history.pushState(null, "", window.location.href);
         };
+
+        var toastElList = [].slice.call(document.querySelectorAll('.toast'));
+        var toastList = toastElList.map(function (toastEl) {
+            var t = new bootstrap.Toast(toastEl, { delay: 5000 });
+            if (toastEl.innerText.trim() !== "") {
+                t.show();
+            }
+            return t;
+        });
     });
 
-    // Función global para diálogos de confirmación de ALIROS con LOGO personalizado
     function confirmarAccionAliros(titulo, texto, callback) {
         Swal.fire({
             title: '<strong>' + titulo + '</strong>',
             text: texto,
-            // --- CAMBIO: Usamos imagen personalizada en lugar de icono ---
             imageUrl: '/images/logoAlirossinfondo.png',
             imageWidth: 100,
             imageHeight: 100,
             imageAlt: 'Aliros Logo',
-            // ------------------------------------------------------------
             showCancelButton: true,
-            confirmButtonColor: '#198754', // Verde success
-            cancelButtonColor: '#6c757d',  // Gris
+            confirmButtonColor: '#198754',
+            cancelButtonColor: '#6c757d',
             confirmButtonText: 'Aceptar',
             cancelButtonText: 'Cancelar',
             reverseButtons: true

@@ -46,7 +46,7 @@ public class IncidenciaController {
         dto.setUsuario(usuario.getNombre() + " " + usuario.getApellido1());
 
         model.addAttribute("incidencia", dto);
-        return "incidencias-form";
+        return "incidencia-form";
     }
 
     // VER DETALLE
@@ -56,7 +56,7 @@ public class IncidenciaController {
         if (usuario == null) return "redirect:/";
 
         model.addAttribute("incidencia", incidenciaService.obtenerPorId(id));
-        return "incidencias-form";
+        return "incidencia-form";
     }
 
     // GUARDAR (Esto dispara el email en la API)

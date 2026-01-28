@@ -1,45 +1,30 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
+<head th:replace="~{fragments :: head}">
     <title>Libro de Incidencias</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
-    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/2.5.0/css/responsive.bootstrap5.min.css">
-
-    <link th:href="@{/css/style.css}" rel="stylesheet">
-
-    <style>
-        /* Ajuste específico para esta tabla (Cabecera Roja de Incidencias) */
-        table.dataTable thead th {
-            background-color: #dc3545; /* Rojo Bootstrap */
-            color: white;
-            vertical-align: middle;
-        }
-    </style>
 </head>
-<body>
+<body class="bg-light">
 
 <div th:replace="~{fragments :: menu('incidencias')}"></div>
 
-<div class="container-fluid container-90">
+<div class="container-fluid container-90 mt-4 animate__animated animate__fadeIn">
 
-    <div class="d-flex justify-content-between align-items-center page-header">
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
             <h2 class="text-danger fw-bold mb-0">Incidencias</h2>
             <p class="text-muted mb-0 fw-bold" th:text="${nombreCentro}">Centro</p>
         </div>
-        <a href="/incidencias/nueva" class="btn btn-danger shadow-sm">
-            <i class="bi bi-exclamation-triangle-fill"></i> Nueva Incidencia
+        <a th:href="@{/email/incidencia/nueva}" class="btn btn-danger shadow-sm rounded-pill px-4">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> Nueva Incidencia
         </a>
     </div>
 
-    <div class="card table-card">
-        <div class="card-body">
-            <table id="tablaIncidencias" class="table table-striped table-hover w-100 h-100">
-                <thead class="sticky-top">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-0">
+            <table class="table table-striped table-hover align-middle mb-0">
+                <thead class="table-dark">
                 <tr>
-                    <th>Fecha / Hora</th>
+                    <th class="ps-4">Fecha / Hora</th>
                     <th>Reportado Por</th>
                     <th>Descripción</th>
                     <th>Comunicado A</th>
@@ -47,60 +32,93 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="inc : ${listaIncidencias}">
-
-                    <td th:data-order="${inc.fechaHora}"
-                        th:text="${#temporals.format(inc.fechaHora, 'dd/MM/yyyy HH:mm')}"
-                        class="fw-bold text-nowrap">
+                <tr th:each="inc : ${incidenciasPage.content}">
+                    <td class="ps-4">
+                        <div th:if="${inc.fecha != null and inc.fecha.length() == 8}">
+                            <span class="fw-bold" th:text="${inc.fecha.substring(6,8) + '/' + inc.fecha.substring(4,6) + '/' + inc.fecha.substring(0,4)}"></span><br>
+                            <small class="text-muted" th:if="${inc.hora != null and inc.hora.length() >= 4}"
+                                   th:text="${inc.hora.substring(0,2) + ':' + inc.hora.substring(2,4)}"></small>
+                        </div>
                     </td>
-
                     <td th:text="${inc.usuario}">Vigilante</td>
-
-                    <td th:text="${#strings.abbreviate(inc.texto, 60)}" th:title="${inc.texto}">Texto...</td>
-
                     <td>
-                        <span th:if="${inc.comunicadoA != null and inc.comunicadoA != ''}">
-                            <i class="bi bi-megaphone-fill text-danger"></i>
-                            <span th:text="${inc.comunicadoA}">Jefe</span>
-                        </span>
-                        <span th:if="${inc.comunicadoA == null or inc.comunicadoA == ''}" class="text-muted">-</span>
+                        <small class="text-dark" th:text="${#strings.abbreviate(inc.texto, 80)}"></small>
                     </td>
-
+                    <td>
+                        <div th:if="${inc.comunicadoA != null}">
+                            <i class="bi bi-megaphone-fill text-danger me-1 small"></i>
+                            <span class="small fw-bold" th:text="${inc.comunicadoA}">Jefe</span>
+                        </div>
+                    </td>
                     <td class="text-center">
-                        <a th:href="@{/incidencias/detalle/{id}(id=${inc.id})}"
-                           class="btn btn-sm btn-outline-dark btn-xs">
+                        <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3"
+                                data-bs-toggle="modal"
+                                data-bs-target="#modalDetalle"
+                                th:data-usuario="${inc.usuario}"
+                                th:data-texto="${inc.texto}">
                             <i class="bi bi-eye"></i> Ver
-                        </a>
+                        </button>
                     </td>
                 </tr>
                 </tbody>
             </table>
         </div>
+
+        <div class="card-footer bg-white py-3" th:if="${incidenciasPage.totalPages > 1}">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link shadow-sm" th:href="@{/email/incidencia(page=${currentPage - 1})}">Anterior</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link text-dark">Página [[${currentPage + 1}]] de [[${incidenciasPage.totalPages}]]</span>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage + 1 == incidenciasPage.totalPages} ? 'disabled'">
+                        <a class="page-link shadow-sm" th:href="@{/email/incidencia(page=${currentPage + 1})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
-<script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
+<div class="modal fade" id="modalDetalle" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title fw-bold"><i class="bi bi-info-circle me-2"></i> Detalle de Incidencia</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <p class="small text-secondary fw-bold mb-1">REPORTADO POR:</p>
+                <p id="modalUsuario" class="fw-bold mb-4 text-dark"></p>
 
-<script th:inline="none">
-    $(document).ready(function() {
-        $('#tablaIncidencias').DataTable({
-            responsive: true,
-            pageLength: 10,
-            scrollY: '60vh',        // Altura del scroll vertical
-            scrollCollapse: true,
-            order: [[ 0, "desc" ]], // Orden descendente por fecha
-            language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
-            }
-        });
+                <p class="small text-secondary fw-bold mb-1">DESCRIPCIÓN COMPLETA:</p>
+                <div class="p-3 bg-light rounded border">
+                    <p id="modalTexto" class="mb-0" style="white-space: pre-wrap;"></p>
+                </div>
+            </div>
+            <div class="modal-footer bg-light">
+                <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Script para pasar datos a la modal cuando se abre
+    const modalDetalle = document.getElementById('modalDetalle');
+    modalDetalle.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const usuario = button.getAttribute('data-usuario');
+        const texto = button.getAttribute('data-texto');
+
+        document.getElementById('modalUsuario').textContent = usuario;
+        document.getElementById('modalTexto').textContent = texto;
     });
 </script>
 
+<div th:replace="~{fragments :: toasts}"></div>
 <div th:replace="~{fragments :: bloquearNavegacion}"></div>
 
 </body>

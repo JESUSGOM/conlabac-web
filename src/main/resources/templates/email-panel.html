@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments :: head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments :: menu('email')}"></div>
+
+<div class="container mt-4 animate__animated animate__fadeIn">
+    <div class="card shadow-sm border-0">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h4 class="mb-0 text-dark fw-bold"><i class="bi bi-envelope-paper-fill me-2 text-primary"></i> Histórico de Envíos</h4>
+            <a th:href="@{/email/nuevo}" class="btn btn-primary rounded-pill px-4 fw-bold">
+                <i class="bi bi-plus-circle me-1"></i> Redactar Nuevo
+            </a>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="table-light">
+                    <tr>
+                        <th class="ps-4">Fecha / Hora</th>
+                        <th>Destinatario</th>
+                        <th>Emisor (DNI)</th>
+                        <th>Mensaje (Resumen)</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="email : ${emailsPage.content}">
+                        <td class="ps-4">
+                            <span class="fw-bold" th:text="${email.fecha.substring(6,8) + '/' + email.fecha.substring(4,6) + '/' + email.fecha.substring(0,4)}"></span> <br>
+                            <small class="text-muted" th:text="${email.hora.substring(0,2) + ':' + email.hora.substring(2,4)}"></small>
+                        </td>
+                        <td class="fw-bold text-primary" th:text="${email.destinatario}"></td>
+                        <td th:text="${email.emisor}"></td>
+                        <td class="text-muted">
+                            <small th:text="${email.texto.length() > 80 ? email.texto.substring(0,80) + '...' : email.texto}"></small>
+                        </td>
+                    </tr>
+                    <tr th:if="${emailsPage.totalElements == 0}">
+                        <td colspan="4" class="text-center py-5">No se han encontrado envíos registrados.</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white py-3" th:if="${emailsPage.totalPages > 1}">
+            <nav>
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                        <a class="page-link shadow-sm" th:href="@{/email(page=${currentPage - 1})}">Anterior</a>
+                    </li>
+                    <li class="page-item disabled">
+                        <span class="page-link">Página [[${currentPage + 1}]] de [[${emailsPage.totalPages}]]</span>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage + 1 == emailsPage.totalPages} ? 'disabled'">
+                        <a class="page-link shadow-sm" th:href="@{/email(page=${currentPage + 1})}">Siguiente</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: toasts}"></div>
+</body>
+</html>

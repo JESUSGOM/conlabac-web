@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="~{fragments :: head}"></div>
+    <title>Enviar Email - Aliros</title>
+</head>
+<body class="bg-light">
+<div th:replace="~{fragments :: menu('email')}"></div>
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 animate__animated animate__fadeIn">
+            <div class="card shadow border-0" style="border-radius: 1rem;">
+                <div class="card-header bg-dark text-white p-3" style="border-radius: 1rem 1rem 0 0;">
+                    <h4 class="mb-0"><i class="bi bi-send-check-fill me-2"></i> Nuevo Mensaje</h4>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{/email/enviar}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Para:</label>
+                            <input type="email" name="destinatario" class="form-control" placeholder="ejemplo@correo.com" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Asunto:</label>
+                            <input type="text" name="asunto" class="form-control" placeholder="Asunto del correo" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Mensaje:</label>
+                            <textarea name="mensaje" class="form-control" rows="8" placeholder="Escriba su mensaje aquí..." required style="resize: none;"></textarea>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mt-4">
+                            <a href="/home" class="btn btn-outline-secondary rounded-pill px-4">
+                                <i class="bi bi-x-circle me-1"></i> Cancelar
+                            </a>
+                            <button type="submit" class="btn btn-primary rounded-pill px-5 fw-bold shadow-sm">
+                                Enviar Correo <i class="bi bi-arrow-right-short ms-1"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="~{fragments :: bloquearNavegacion}"></div>
+</body>
+</html>
