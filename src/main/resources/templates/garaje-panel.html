@@ -77,16 +77,40 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 
+<!--<script th:inline="none">-->
+<!--    $(document).ready(function() {-->
+<!--        $('#tablaGaraje').DataTable({-->
+<!--            responsive: true,-->
+<!--            pageLength: 10,-->
+<!--            scrollY: '60vh',        // Altura del scroll vertical-->
+<!--            scrollCollapse: true,-->
+<!--            order: [[ 0, "desc" ]], // Ordenar por fecha descendente-->
+<!--            language: {-->
+<!--                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"-->
+<!--            }-->
+<!--        });-->
+<!--    });-->
+<!--</script>-->
 <script th:inline="none">
     $(document).ready(function() {
         $('#tablaGaraje').DataTable({
             responsive: true,
             pageLength: 10,
-            scrollY: '60vh',        // Altura del scroll vertical
+            scrollY: '60vh',
             scrollCollapse: true,
-            order: [[ 0, "desc" ]], // Ordenar por fecha descendente
+            order: [[ 0, "desc" ]],
             language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json"
+                search: "Buscar:",
+                lengthMenu: "Mostrar _MENU_ registros",
+                info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                paginate: {
+                    first: "Primero",
+                    previous: "Anterior",
+                    next: "Siguiente",
+                    last: "Último"
+                },
+                zeroRecords: "No se encontraron resultados",
+                emptyTable: "No hay datos disponibles"
             }
         });
     });

@@ -95,7 +95,26 @@
             scrollCollapse: true,
             order: [[ 0, "desc" ]],
             columnDefs: [{ responsivePriority: 1, targets: -1 }, { responsivePriority: 2, targets: 0 }],
+            /* Código antiguo comentado
             language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
+            */
+            language: {
+                processing:     "Procesando...",
+                search:         "Buscar:",
+                lengthMenu:    "Mostrar _MENU_ registros",
+                info:           "Mostrando _START_ a _END_ de _TOTAL_ llamadas",
+                infoEmpty:      "Mostrando 0 a 0 de 0 registros",
+                infoFiltered:   "(filtrado de _MAX_ registros totales)",
+                loadingRecords: "Cargando...",
+                zeroRecords:    "No se encontraron resultados",
+                emptyTable:     "No hay llamadas registradas",
+                paginate: {
+                    first:      "Primero",
+                    previous:   "Anterior",
+                    next:       "Siguiente",
+                    last:       "Último"
+                }
+            }
         });
     });
 </script>

@@ -82,6 +82,18 @@
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script>
 
+<!--<script th:inline="none">-->
+<!--  $(document).ready(function() {-->
+<!--    $('#tablaPrestamos').DataTable({-->
+<!--      responsive: true,-->
+<!--      pageLength: 10,-->
+<!--      scrollY: '55vh',-->
+<!--      scrollCollapse: true,-->
+<!--      lengthChange: false,-->
+<!--      language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }-->
+<!--    });-->
+<!--  });-->
+<!--</script>-->
 <script th:inline="none">
   $(document).ready(function() {
     $('#tablaPrestamos').DataTable({
@@ -90,7 +102,26 @@
       scrollY: '55vh',
       scrollCollapse: true,
       lengthChange: false,
+      /* Código antiguo comentado para no perderlo
       language: { url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/es-ES.json" }
+      */
+      language: {
+        processing:     "Procesando...",
+        search:         "Buscar:",
+        lengthMenu:    "Mostrar _MENU_ registros",
+        info:           "Mostrando _START_ a _END_ de _TOTAL_ llaves",
+        infoEmpty:      "No hay llaves prestadas",
+        infoFiltered:   "(filtrado de _MAX_ registros totales)",
+        loadingRecords: "Cargando...",
+        zeroRecords:    "No se encontraron resultados",
+        emptyTable:     "No hay llaves pendientes de devolución",
+        paginate: {
+          first:      "Primero",
+          previous:   "Anterior",
+          next:       "Siguiente",
+          last:       "Último"
+        }
+      }
     });
   });
 </script>
